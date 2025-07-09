@@ -1,0 +1,36 @@
+{
+  "name": "rinha-payflow",
+  "version": "1.0.0",
+  "description": "Payflow service for rinha backend 2025",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev:api": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guilhermegules/rinha-payflow.git"
+  },
+  "keywords": [
+    "Node.js"
+  ],
+  "author": "Guilherme Gules Moreira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guilhermegules/rinha-payflow/issues"
+  },
+  "homepage": "https://github.com/guilhermegules/rinha-payflow#readme",
+  "dependencies": {
+    "fastify": "^5.4.0",
+    "fp-ts": "^2.16.10",
+    "pg": "^8.16.3",
+    "redis": "^5.6.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.12",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
