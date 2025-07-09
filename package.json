@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev:api": "ts-node src/index.ts"
+    "dev:api": "ts-node src/apps/api/server.ts"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/guilhermegules/rinha-payflow#readme",
   "dependencies": {
+    "dotenv": "^17.2.0",
     "fastify": "^5.4.0",
     "fp-ts": "^2.16.10",
     "pg": "^8.16.3",
