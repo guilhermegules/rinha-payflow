@@ -1,6 +1,7 @@
 services:
   api-1:
-    image: guilhermegules/rinha-node:1.0.1
+    image: guilhermegules/rinha-node:1.0.3
+    container_name: api-1
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
@@ -18,7 +19,8 @@ services:
           memory: "128MB"
 
   api-2:
-    image: guilhermegules/rinha-node:1.0.1
+    image: guilhermegules/rinha-node:1.0.3
+    container_name: api-2
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
@@ -37,6 +39,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    container_name: redis
     networks:
       - backend
     deploy:
@@ -47,6 +50,7 @@ services:
 
   db:
     image: postgres:15-alpine
+    container_name: db
     environment:
       POSTGRES_DB: rinha
       POSTGRES_USER: postgres
@@ -64,6 +68,7 @@ services:
 
   nginx:
     image: nginx:latest
+    container_name: nginx
     ports:
       - "9999:80"
     volumes:
@@ -71,6 +76,8 @@ services:
     depends_on:
       - api-1
       - api-2
+    networks:
+      - backend
 
 volumes:
   pgdata:
