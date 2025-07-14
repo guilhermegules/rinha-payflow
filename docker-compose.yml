@@ -1,17 +1,16 @@
 services:
   api-1:
-    image: guilhermegules/rinha-node:latest
+    image: guilhermegules/rinha-node:1.0.1
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
       - REDIS_URL=redis://redis:6379
       - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
       - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - PORT=3000
     networks:
       - backend
       - payment-processor
-    ports:
-      - "9999:3000" # expor uma instância para o teste
     deploy:
       resources:
         limits:
@@ -19,13 +18,14 @@ services:
           memory: "128MB"
 
   api-2:
-    image: guilhermegules/rinha-node:latest
+    image: guilhermegules/rinha-node:1.0.1
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
       - REDIS_URL=redis://redis:6379
       - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
       - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - PORT=3000
     networks:
       - backend
       - payment-processor
@@ -61,6 +61,16 @@ services:
         limits:
           cpus: "0.375"
           memory: "128MB"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "9999:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-1
+      - api-2
 
 volumes:
   pgdata:
