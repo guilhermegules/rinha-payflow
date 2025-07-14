@@ -9,4 +9,4 @@ COPY . .
 
 RUN npm run build
 
-CMD ["node", "TODO"]
+CMD ["npm", "start"]
