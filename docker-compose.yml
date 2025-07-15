@@ -1,7 +1,8 @@
 services:
   api-1:
-    image: guilhermegules/rinha-node:1.0.3
+    image: guilhermegules/rinha-node:latest
     container_name: api-1
+    command: npm run start:api
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
@@ -15,12 +16,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "128MB"
+          cpus: "0.4"
+          memory: "80MB"
 
   api-2:
-    image: guilhermegules/rinha-node:1.0.3
+    image: guilhermegules/rinha-node:latest
     container_name: api-2
+    command: npm run start:api
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
@@ -34,8 +36,26 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "128MB"
+          cpus: "0.4"
+          memory: "80MB"
+
+  worker:
+    image: guilhermegules/rinha-node:latest
+    command: npm run start:worker
+    container_name: worker
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
+      - REDIS_URL=redis://redis:6379
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "40MB"
 
   redis:
     image: redis:7-alpine
@@ -45,8 +65,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.125"
-          memory: "32MB"
+          cpus: "0.1"
+          memory: "20MB"
 
   db:
     image: postgres:15-alpine
@@ -63,8 +83,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.375"
-          memory: "128MB"
+          cpus: "0.25"
+          memory: "100MB"
 
   nginx:
     image: nginx:latest
@@ -78,6 +98,11 @@ services:
       - api-2
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "30MB"
 
 volumes:
   pgdata:
