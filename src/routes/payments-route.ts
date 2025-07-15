@@ -1,10 +1,7 @@
 import { FastifyInstance } from "fastify";
+import { getPaymentSummary, processPayment } from "../services/payment-service";
 
 export default async function paymentsRoute(fastify: FastifyInstance) {
-  fastify.post("/payments", async (request, response) => {
-    response.send({ ok: true });
-  });
-  fastify.get("/payments-summary", async (request, response) => {
-    response.send({ ok: true });
-  });
+  fastify.post("/payments", processPayment);
+  fastify.get("/payments-summary", getPaymentSummary);
 }
