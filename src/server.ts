@@ -1,17 +1,24 @@
 import fastify from "fastify";
 import paymentsRoute from "./routes/payments-route";
 import dotenv from "dotenv";
+import { connectRedis } from "./infra/libs/redis";
 
 dotenv.config();
 
-const app = fastify({ logger: true });
+async function bootstrap() {
+  const app = fastify({ logger: true });
 
-app.register(paymentsRoute);
+  app.register(paymentsRoute);
 
-app.listen(
-  { port: Number(process.env.PORT), host: "0.0.0.0" },
-  (err, address) => {
-    if (err) throw err;
-    console.log(`Server is running :: ${address}`);
-  }
-);
+  await connectRedis();
+
+  app.listen(
+    { port: Number(process.env.PORT), host: "0.0.0.0" },
+    (err, address) => {
+      if (err) throw err;
+      console.log(`Server is running :: ${address}`);
+    }
+  );
+}
+
+bootstrap();
