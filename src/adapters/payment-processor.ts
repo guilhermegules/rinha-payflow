@@ -8,7 +8,7 @@ export function paymentProcessor(baseUrl: string): PaymentProcessor {
           method: "POST",
           body: JSON.stringify(payment),
         });
-        const parsedResponse = await response.json();
+        const parsedResponse = await response.text();
         return parsedResponse;
       } catch (error) {
         console.log(error);

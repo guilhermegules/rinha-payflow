@@ -36,12 +36,16 @@ async function startWorker() {
         ? process.env.PAYMENT_PROCESSOR_URL_DEFAULT
         : process.env.PAYMENT_PROCESSOR_URL_FALLBACK;
 
-    await paymentProcessor(baseUrl!).process(paymentBody);
-
     const payment: Payment = paymentFactory(
       paymentBody,
       paymentProcessorHealth
     );
+
+    await paymentProcessor(baseUrl!).process({
+      ...paymentBody,
+      requestedAt: payment.requestedAt,
+    });
+
     await savePayment(payment);
   }
 }

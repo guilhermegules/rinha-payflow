@@ -1,6 +1,7 @@
-import { Payment } from "../../domain/payment";
-import { ProcessablePaymentBodyDTO } from "../../dto/processable-payment-body-dto";
+import { ProcessablePaymentWorkerBody } from "../../dto/processable-payment-body-dto";
 
 export interface PaymentProcessor {
-  process: (payment: ProcessablePaymentBodyDTO) => Promise<Payment>;
+  process: (
+    payment: ProcessablePaymentWorkerBody
+  ) => Promise<string | undefined>;
 }
