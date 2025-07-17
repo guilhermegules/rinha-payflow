@@ -1,1 +1,1 @@
-export type PaymentProcessorType = "default" | "fallback";
+export type PaymentProcessorType = "default" | "fallback" | "notfound";

@@ -6,6 +6,7 @@ import { connectRedis, pop } from "../infra/libs/redis";
 import { savePayment } from "../infra/repositories/payments-repository";
 import { paymentFactory } from "../ports/payment/payment-factory";
 import { paymentProcessor } from "../adapters/payment-processor";
+import logger from "pino";
 
 async function startWorker() {
   await connectRedis();
@@ -15,38 +16,53 @@ async function startWorker() {
 
     if (!paymentData?.element) return;
 
-    const paymentProcessorHealth = await paymentProcessorHealthCheck().check();
-
     const paymentBody: ProcessablePaymentBodyDTO = JSON.parse(
       paymentData.element
     );
 
-    if (paymentProcessorHealth.failing) {
+    try {
+      logger().info({}, "Payment process start");
+
+      const paymentProcessorHealth =
+        await paymentProcessorHealthCheck().check();
+
+      if (paymentProcessorHealth.failing) {
+        const payment: Payment = paymentFactory(
+          paymentBody,
+          paymentProcessorHealth
+        );
+
+        await savePayment(payment);
+        return;
+      }
+
+      const baseUrl =
+        paymentProcessorHealth.serviceName === "default"
+          ? process.env.PAYMENT_PROCESSOR_URL_DEFAULT
+          : process.env.PAYMENT_PROCESSOR_URL_FALLBACK;
+
       const payment: Payment = paymentFactory(
         paymentBody,
         paymentProcessorHealth
       );
 
+      await paymentProcessor(baseUrl!).process({
+        ...paymentBody,
+        requestedAt: payment.requestedAt,
+      });
+
       await savePayment(payment);
-      return;
+
+      logger().info(`Payment saved sucessfully`);
+    } catch (error) {
+      console.error(error);
+      const payment: Payment = paymentFactory(paymentBody, {
+        failing: true,
+        minResponseTime: 0,
+        serviceName: "notfound",
+      });
+      await savePayment(payment);
     }
-
-    const baseUrl =
-      paymentProcessorHealth.serviceName === "default"
-        ? process.env.PAYMENT_PROCESSOR_URL_DEFAULT
-        : process.env.PAYMENT_PROCESSOR_URL_FALLBACK;
-
-    const payment: Payment = paymentFactory(
-      paymentBody,
-      paymentProcessorHealth
-    );
-
-    await paymentProcessor(baseUrl!).process({
-      ...paymentBody,
-      requestedAt: payment.requestedAt,
-    });
-
-    await savePayment(payment);
   }
 }
 

@@ -14,7 +14,7 @@ services:
       - PORT=3000
     volumes:
       - .:/app
-      - /app/node_modules
+      - node_modules:/app/node_modules
     ports:
       - "3000:3000"
     networks:
@@ -35,7 +35,7 @@ services:
       - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
     volumes:
       - .:/app
-      - /app/node_modules
+      - node_modules:/app/node_modules
     networks:
       - backend
       - payment-processor
@@ -61,6 +61,7 @@ services:
 
 volumes:
   pgdata:
+  node_modules:
 
 networks:
   backend:

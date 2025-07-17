@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: http://localhost:9999/payments-summary
+  url: http://localhost:9999/payments-summary?from=2025-07-15&to=2025-07-20
   body: none
   auth: inherit
+}
+
+params:query {
+  from: 2025-07-15
+  to: 2025-07-20
 }

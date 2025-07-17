@@ -3,6 +3,7 @@ import { ProcessablePaymentBodyDTO } from "../dto/processable-payment-body-dto";
 import { enqueuePayment } from "../ports/payment/enqueue-payment";
 import { db } from "../infra/libs/pg";
 import { processablePaymentBodyValidator } from "../dto/validators/processable-payment-body-validator";
+import { findPaymentSummary } from "../infra/repositories/payments-repository";
 
 export async function processPayment(
   request: FastifyRequest,
@@ -25,6 +26,21 @@ export async function getPaymentSummary(
   request: FastifyRequest,
   response: FastifyReply
 ) {
-  console.log((await db.query("select * from payments")).rows);
-  return Promise.resolve({ ok: true });
+  const { from, to } = request.query as { from: string; to: string };
+
+  const paymentSummary = await findPaymentSummary(
+    new Date(from).toISOString(),
+    new Date(to).toISOString()
+  );
+
+  const paymentFormatted = paymentSummary.reduce(
+    (response, payment) =>
+      (response[payment.processor] = {
+        totalRequests: payment.totalrequests,
+        totalAmount: payment.totalamount,
+      }),
+    {}
+  );
+
+  return response.status(200).send(paymentFormatted);
 }
