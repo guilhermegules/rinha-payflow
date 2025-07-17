@@ -1,0 +1,69 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: api-dev
+    command: npm run dev:api
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
+      - REDIS_URL=redis://redis:6379
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - PORT=3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+      - payment-processor
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: worker-dev
+    command: npm run dev:worker
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
+      - REDIS_URL=redis://redis:6379
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - backend
+      - payment-processor
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-dev
+    networks:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: db-dev
+    environment:
+      POSTGRES_DB: rinha
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge
+  payment-processor:
+    external: true
