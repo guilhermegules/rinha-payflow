@@ -40,6 +40,10 @@ npm run start:worker
 ## How to publish docker image
 
 ```bash
+# If needed for debug process you can clean docker volumes
+docker compose down -v
+docker compose up --build
+
 # Image build (architecture linux/amd64)
 docker buildx build --platform linux/amd64 -t guilhermegules/rinha-node:latest .
 
@@ -48,4 +52,14 @@ docker login
 
 # Docker hub image push
 docker push guilhermegules/rinha-node:latest
+```
+
+## Dev mode
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+
+# or to run services one by one
+docker compose -f docker-compose.dev.yml up api
+docker compose -f docker-compose.dev.yml up worker
 ```
