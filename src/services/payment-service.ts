@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ProcessablePaymentBodyDTO } from "../dto/processable-payment-body-dto";
 import { enqueuePayment } from "../ports/payment/enqueue-payment";
-import { db } from "../infra/libs/pg";
 import { processablePaymentBodyValidator } from "../dto/validators/processable-payment-body-validator";
 import { findPaymentSummary } from "../infra/repositories/payments-repository";
+import { paymentProcessorSummaryResponseMapper } from "./mappers/payment-processor-summary-response-mapper";
 
 export async function processPayment(
   request: FastifyRequest,
@@ -33,14 +33,8 @@ export async function getPaymentSummary(
     new Date(to).toISOString()
   );
 
-  const paymentFormatted = paymentSummary.reduce(
-    (response, payment) =>
-      (response[payment.processor] = {
-        totalRequests: payment.totalrequests,
-        totalAmount: payment.totalamount,
-      }),
-    {}
-  );
+  const paymentFormatted =
+    paymentProcessorSummaryResponseMapper(paymentSummary);
 
   return response.status(200).send(paymentFormatted);
 }

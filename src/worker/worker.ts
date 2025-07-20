@@ -14,7 +14,9 @@ async function startWorker() {
   while (true) {
     const paymentData = await pop(PAYMENT_QUEUE);
 
-    if (!paymentData?.element) return;
+    if (!paymentData?.element) {
+      continue;
+    }
 
     const paymentBody: ProcessablePaymentBodyDTO = JSON.parse(
       paymentData.element
@@ -33,7 +35,8 @@ async function startWorker() {
         );
 
         await savePayment(payment);
-        return;
+
+        continue;
       }
 
       const baseUrl =
@@ -46,12 +49,14 @@ async function startWorker() {
         paymentProcessorHealth
       );
 
-      await paymentProcessor(baseUrl!).process({
+      const paymentProcessed = await paymentProcessor(baseUrl!).process({
         ...paymentBody,
         requestedAt: payment.requestedAt,
       });
 
-      await savePayment(payment);
+      if (!paymentProcessed) continue;
+
+      savePayment(payment);
 
       logger().info(`Payment saved sucessfully`);
     } catch (error) {
@@ -61,7 +66,7 @@ async function startWorker() {
         minResponseTime: 0,
         serviceName: "notfound",
       });
-      await savePayment(payment);
+      savePayment(payment);
     }
   }
 }

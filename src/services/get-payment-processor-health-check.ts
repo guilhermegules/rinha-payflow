@@ -18,7 +18,12 @@ export async function getPaymentProcessorHealthCheck(
       ? `${process.env.PAYMENT_PROCESSOR_URL_DEFAULT}/payments/service-health`
       : `${process.env.PAYMENT_PROCESSOR_URL_FALLBACK}/payments/service-health`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch health check from ${service}`);
@@ -26,7 +31,7 @@ export async function getPaymentProcessorHealthCheck(
 
   const data = await response.json();
 
-  const valueTtlSeconds = 5;
+  const valueTtlSeconds = 1;
 
   await setValue(cacheKey, JSON.stringify(data), valueTtlSeconds);
 

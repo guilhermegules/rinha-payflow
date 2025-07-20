@@ -1,5 +1,6 @@
 import { Payment } from "../../domain/payment";
 import { db } from "../libs/pg";
+import { paymentEntityFactory } from "../../domain/payment-entity-factory";
 
 export async function savePayment(payment: Payment) {
   const result = await db.query(
@@ -26,5 +27,5 @@ export async function findPaymentSummary(from: string, to: string) {
     [from, to]
   );
 
-  return response.rows;
+  return response.rows.map(paymentEntityFactory);
 }

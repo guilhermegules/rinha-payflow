@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { createClient } from "redis";
 
 const redisClient = createClient({ url: process.env.REDIS_URL });
@@ -39,5 +40,5 @@ export async function push(key: string, value: any) {
  * This is blocking until have the item
  */
 export async function pop(key: string) {
-  return await redisClient.blPop(key, 0);
+  return await redisClient.blPop(key, 5);
 }

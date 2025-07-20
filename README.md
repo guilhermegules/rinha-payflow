@@ -62,4 +62,7 @@ docker compose -f docker-compose.dev.yml up --build
 # or to run services one by one
 docker compose -f docker-compose.dev.yml up api
 docker compose -f docker-compose.dev.yml up worker
+
+# Watch resources
+docker stats api-1 api-2 worker nginx redis db
 ```

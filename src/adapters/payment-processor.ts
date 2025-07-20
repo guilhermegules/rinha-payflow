@@ -11,6 +11,7 @@ export function paymentProcessor(baseUrl: string): PaymentProcessor {
         body: JSON.stringify(payment),
       });
       const parsedResponse = await response.json();
+      console.log(parsedResponse);
       return parsedResponse;
     },
   };
