@@ -1,5 +1,0 @@
-export type ApiErrorResponse = {
-  statusCode: number;
-  message: string;
-  details?: any;
-};
