@@ -3,10 +3,12 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
+
+ENV NODE_ENV=development
+
 RUN npm install
 
 COPY . .
 
-RUN npm run build
+CMD ["npm", "run", "dev:api"]
 
-CMD ["npm", "start"]
