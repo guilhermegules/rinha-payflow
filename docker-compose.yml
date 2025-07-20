@@ -56,7 +56,7 @@ services:
       resources:
         limits:
           cpus: "0.25"
-          memory: "40MB"
+          memory: "90MB"
 
   redis:
     image: redis:7-alpine
@@ -85,7 +85,7 @@ services:
       resources:
         limits:
           cpus: "0.25"
-          memory: "100MB"
+          memory: "50MB"
 
   nginx:
     image: nginx:latest
