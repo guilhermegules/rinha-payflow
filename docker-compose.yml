@@ -16,8 +16,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.4"
-          memory: "80MB"
+          cpus: "0.35"
+          memory: "60MB"
 
   api-2:
     image: guilhermegules/rinha-node:latest
@@ -36,8 +36,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.4"
-          memory: "80MB"
+          cpus: "0.35"
+          memory: "60MB"
 
   worker:
     image: guilhermegules/rinha-node:latest
@@ -55,8 +55,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.25"
-          memory: "90MB"
+          cpus: "0.3"
+          memory: "70MB"
 
   redis:
     image: redis:7-alpine
@@ -67,7 +67,7 @@ services:
       resources:
         limits:
           cpus: "0.1"
-          memory: "20MB"
+          memory: "50MB"
 
   db:
     image: postgres:15-alpine
@@ -84,8 +84,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.25"
-          memory: "50MB"
+          cpus: "0.3"
+          memory: "64MB"
 
   nginx:
     image: nginx:latest
