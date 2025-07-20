@@ -8,18 +8,11 @@ export function paymentProcessorSummaryResponseMapper(
   }[]
 ) {
   return paymentSummary.reduce(
-    (response, payment) => {
-      if (payment.processor === "default") {
-        response.default = {
-          totalAmount: payment.totalAmount,
-          totalRequests: payment.totalRequests,
-        };
-      }
-
-      if (payment.processor === "fallback") {
-        response.fallback = {
-          totalAmount: payment.totalAmount,
-          totalRequests: payment.totalRequests,
+    (response, { processor, totalAmount, totalRequests }) => {
+      if (processor === "default" || processor === "fallback") {
+        response[processor] = {
+          totalAmount,
+          totalRequests,
         };
       }
 
