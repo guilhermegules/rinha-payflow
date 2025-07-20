@@ -85,7 +85,7 @@ services:
       resources:
         limits:
           cpus: "0.3"
-          memory: "64MB"
+          memory: "80MB"
 
   nginx:
     image: nginx:latest

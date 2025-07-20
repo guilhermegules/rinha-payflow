@@ -29,11 +29,11 @@ npm run start:worker
 
 | Container | Image                            | CPUs | Memory | Details                       |
 | --------- | -------------------------------- | ---- | ------ | ----------------------------- |
-| api-1     | guilhermegules/rinha-node:latest | 0.4  | 80MB   | API instance 1 – port 3000    |
-| api-2     | guilhermegules/rinha-node:latest | 0.4  | 80MB   | API instance 2 - port 3000    |
-| worker    | guilhermegules/rinha-node:latest | 0.25 | 40MB   | Worker for consuming payments |
-| redis     | redis:7-alpine                   | 0.1  | 20MB   | Cache                         |
-| db        | postgres:15-alpine               | 0.25 | 100MB  | database                      |
+| api-1     | guilhermegules/rinha-node:latest | 0.35 | 60MB   | API instance 1 – port 3000    |
+| api-2     | guilhermegules/rinha-node:latest | 0.35 | 60MB   | API instance 2 - port 3000    |
+| worker    | guilhermegules/rinha-node:latest | 0.3  | 70MB   | Worker for consuming payments |
+| redis     | redis:7-alpine                   | 0.1  | 50MB   | Cache                         |
+| db        | postgres:15-alpine               | 0.3  | 80MB   | database                      |
 | nginx     | nginx:latest                     | 0.1  | 30MB   | Load balancer – port 9999     |
 | **TOTAL** |                                  | 1.5  | 350MB  | -                             |
 
