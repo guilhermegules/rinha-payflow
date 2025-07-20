@@ -7,16 +7,12 @@ export function paymentProcessorHealthCheck(): PaymentProcessorHealthCheck {
       const defaultPaymentProcessorHealth =
         await getPaymentProcessorHealthCheck("default");
 
-      console.log(defaultPaymentProcessorHealth);
-
       if (!defaultPaymentProcessorHealth.failing) {
         return { ...defaultPaymentProcessorHealth, serviceName: "default" };
       }
 
       const fallbackPaymentProcessorHealth =
         await getPaymentProcessorHealthCheck("fallback");
-
-      console.log(fallbackPaymentProcessorHealth);
 
       return { ...fallbackPaymentProcessorHealth, serviceName: "fallback" };
     },

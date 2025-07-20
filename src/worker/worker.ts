@@ -35,7 +35,6 @@ async function startWorker() {
         );
 
         await savePayment(payment);
-
         continue;
       }
 
@@ -56,17 +55,17 @@ async function startWorker() {
 
       if (!paymentProcessed) continue;
 
-      savePayment(payment);
+      await savePayment(payment);
 
       logger().info(`Payment saved sucessfully`);
     } catch (error) {
-      console.error(error);
+      logger().error(error, `Error when saving payment`);
       const payment: Payment = paymentFactory(paymentBody, {
         failing: true,
         minResponseTime: 0,
         serviceName: "notfound",
       });
-      savePayment(payment);
+      await savePayment(payment);
     }
   }
 }
