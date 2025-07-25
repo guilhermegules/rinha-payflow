@@ -1,7 +1,15 @@
 ### Get Payment Summary
-# @name Get Payment Summary
+# @name Get Payment Summary By Date
 # @type http
 # @seq 2
 
-GET http://localhost:9999/payments-summary?from=2025-07-15&to=2025-07-25
+GET http://localhost:9999/payments-summary?from=2025-07-24&to=2025-07-26
+Accept: application/json
+
+### Get Payment Summary
+# @name Get All Payment Summary
+# @type http
+# @seq 2
+
+GET http://localhost:9999/payments-summary
 Accept: application/json

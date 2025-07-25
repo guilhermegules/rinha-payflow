@@ -18,14 +18,30 @@ export async function savePayment(payment: Payment) {
   return result.rows[0];
 }
 
-export async function findPaymentSummary(from: string, to: string) {
-  const response = await db.query(
-    `SELECT processor, COUNT(*) as totalRequests, SUM(amount) as totalAmount 
+export async function findPaymentSummary(from?: string, to?: string) {
+  const conditions = [`status = 'success'`];
+  const filters: string[] = [];
+
+  if (from) {
+    filters.push(from);
+    conditions.push(`requested_at >= $${filters.length}`);
+  }
+
+  if (to) {
+    filters.push(to);
+    conditions.push(`requested_at < $${filters.length}`);
+  }
+
+  const whereClause = conditions.length
+    ? `WHERE ${conditions.join(" AND ")}`
+    : "";
+
+  const query = `SELECT processor, COUNT(*) as totalRequests, SUM(amount) as totalAmount 
     FROM payments 
-    WHERE requested_at >= $1 AND requested_at < $2 AND status = 'success'
-    GROUP BY processor`,
-    [from, to]
-  );
+    ${whereClause}
+    GROUP BY processor`;
+
+  const response = await db.query(query, filters);
 
   return response.rows.map(paymentEntityFactory);
 }

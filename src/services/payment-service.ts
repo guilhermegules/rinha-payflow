@@ -4,6 +4,7 @@ import { enqueuePayment } from "../ports/payment/enqueue-payment";
 import { processablePaymentBodyValidator } from "../dto/validators/processable-payment-body-validator";
 import { findPaymentSummary } from "../infra/repositories/payments-repository";
 import { paymentProcessorSummaryResponseMapper } from "./mappers/payment-processor-summary-response-mapper";
+import { createPaymentSummaryQueryDto } from "../dto/payment-summary-query-params-dto";
 
 export async function processPayment(
   request: FastifyRequest,
@@ -26,12 +27,11 @@ export async function getPaymentSummary(
   request: FastifyRequest,
   response: FastifyReply
 ) {
-  const { from, to } = request.query as { from: string; to: string };
+  const query = request.query as { from: string; to: string };
 
-  const paymentSummary = await findPaymentSummary(
-    new Date(from).toISOString(),
-    new Date(to).toISOString()
-  );
+  const { from, to } = createPaymentSummaryQueryDto(query.from, query.to);
+
+  const paymentSummary = await findPaymentSummary(from, to);
 
   const paymentFormatted =
     paymentProcessorSummaryResponseMapper(paymentSummary);

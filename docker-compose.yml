@@ -1,18 +1,30 @@
+x-common-env: &common-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://postgres:postgres@db:5432/rinha
+  REDIS_URL: redis://redis:6379
+  PAYMENT_PROCESSOR_URL_DEFAULT: http://payment-processor-default:8080
+  PAYMENT_PROCESSOR_URL_FALLBACK: http://payment-processor-fallback:8080
+
+x-common-depends: &common-depends
+  db:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+
+x-common-networks: &common-networks
+  - backend
+  - payment-processor
+
 services:
   api-1:
     image: guilhermegules/rinha-node:latest
     container_name: api-1
     command: npm run start:api
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
-      - REDIS_URL=redis://redis:6379
-      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
-      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-      - PORT=3000
-    networks:
-      - backend
-      - payment-processor
+      <<: *common-env
+      PORT: 3000
+    networks: *common-networks
+    depends_on: *common-depends
     deploy:
       resources:
         limits:
@@ -24,15 +36,10 @@ services:
     container_name: api-2
     command: npm run start:api
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
-      - REDIS_URL=redis://redis:6379
-      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
-      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-      - PORT=3000
-    networks:
-      - backend
-      - payment-processor
+      <<: *common-env
+      PORT: 3000
+    networks: *common-networks
+    depends_on: *common-depends
     deploy:
       resources:
         limits:
@@ -43,15 +50,9 @@ services:
     image: guilhermegules/rinha-node:latest
     command: npm run start:worker
     container_name: worker
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/rinha
-      - REDIS_URL=redis://redis:6379
-      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
-      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
-    networks:
-      - backend
-      - payment-processor
+    environment: *common-env
+    networks: *common-networks
+    depends_on: *common-depends
     deploy:
       resources:
         limits:
@@ -61,6 +62,11 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - backend
     deploy:
@@ -76,6 +82,11 @@ services:
       POSTGRES_DB: rinha
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - backend
     volumes:
@@ -104,6 +115,16 @@ services:
         limits:
           cpus: "0.1"
           memory: "30MB"
+    healthcheck:
+      test: [
+          "CMD-SHELL",
+          "curl -fsS -G http://localhost/payments-summary \
+          --data-urlencode from=$(date +%F) \
+          --data-urlencode to=$(date +%F)",
+        ]
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 volumes:
   pgdata:
