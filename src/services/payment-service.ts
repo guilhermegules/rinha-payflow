@@ -5,6 +5,8 @@ import { processablePaymentBodyValidator } from "../dto/validators/processable-p
 import { findPaymentSummary } from "../infra/repositories/payments-repository";
 import { paymentProcessorSummaryResponseMapper } from "./mappers/payment-processor-summary-response-mapper";
 import { createPaymentSummaryQueryDto } from "../dto/payment-summary-query-params-dto";
+import { isValidDate } from "../utils/date-functions";
+import { paymentSummaryQueryValidator } from "../dto/validators/payment-summary-query-validator";
 
 export async function processPayment(
   request: FastifyRequest,
@@ -30,6 +32,10 @@ export async function getPaymentSummary(
   const query = request.query as { from: string; to: string };
 
   const { from, to } = createPaymentSummaryQueryDto(query.from, query.to);
+
+  if (!paymentSummaryQueryValidator.isInvalid(from, to)) {
+    return response.status(400).send({ error: 'Invalid "from" or "to" date' });
+  }
 
   const paymentSummary = await findPaymentSummary(from, to);
 
