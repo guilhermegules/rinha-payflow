@@ -33,7 +33,7 @@ export async function getPaymentSummary(
 
   const { from, to } = createPaymentSummaryQueryDto(query.from, query.to);
 
-  if (!paymentSummaryQueryValidator.isInvalid(from, to)) {
+  if (paymentSummaryQueryValidator.isInvalid(from, to)) {
     return response.status(400).send({ error: 'Invalid "from" or "to" date' });
   }
 
